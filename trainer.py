@@ -75,8 +75,13 @@ def run_shrinking_windows(df_master, macro, tickers, epochs):
         if len(returns) < config.MIN_OBSERVATIONS:
             continue
 
-        m = macro.loc[returns.index]
-        mode_out = run_vae_mode(returns, m, tickers, f"Shrinking {start_year}", epochs)
+        # Align macro to returns dates (forward fill)
+        m = macro.reindex(returns.index, method='ffill').dropna()
+        returns_aligned = returns.loc[m.index]
+        if len(returns_aligned) < config.MIN_OBSERVATIONS:
+            continue
+
+        mode_out = run_vae_mode(returns_aligned, m, tickers, f"Shrinking {start_year}", epochs)
         if mode_out:
             top_ticker = mode_out['top_picks'][0]['ticker']
             windows.append({
@@ -108,6 +113,9 @@ def main():
     df_master['Date'] = pd.to_datetime(df_master['Date'])
     macro = data_manager.prepare_macro_features(df_master)
 
+    # Ensure macro is sorted for forward fill
+    macro = macro.sort_index()
+
     all_results = {}
 
     for universe_name, tickers in config.UNIVERSES.items():
@@ -116,9 +124,9 @@ def main():
         if len(returns_all) < config.MIN_OBSERVATIONS:
             continue
 
-        m = macro.loc[returns_all.index].dropna()
-        returns_all = returns_all.loc[m.index]
-        m = m.loc[returns_all.index]
+        # --- FIX: align macro to daily returns via forward fill ---
+        m = macro.reindex(returns_all.index, method='ffill').dropna()
+        returns_all = returns_all.loc[m.index]   # keep only rows with macro data
 
         universe_out = {}
 
