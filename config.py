@@ -28,22 +28,26 @@ UNIVERSES = {
 # --- Macro Features (conditioning) ---
 MACRO_COLS = ["VIX", "DXY", "T10Y2Y", "TBILL_3M"]
 
-# --- VAE Parameters ---
-LATENT_DIM = 8                       # latent space dimension
-HIDDEN_LAYERS = [128, 64]            # encoder/decoder hidden layers
+# --- VAE Parameters (higher complexity) ---
+LATENT_DIM = 12                      # more expressive latent space
+HIDDEN_LAYERS = [256, 128, 64]       # deeper encoder/decoder
 BETA = 0.5                           # β-VAE weight for KL loss
 LEARNING_RATE = 0.001
-EPOCHS = 100                         # training epochs
 BATCH_SIZE = 128
 RANDOM_SEED = 42
 MIN_OBSERVATIONS = 252
 
 # --- Inference ---
-NUM_SAMPLES = 100                    # Monte Carlo samples for expected return
-REGIME_WINDOW = 63                   # lookback for regime stress computation
+NUM_SAMPLES = 200                    # more Monte Carlo samples
+REGIME_WINDOW = 63
+
+# --- Training Epochs ---
+DAILY_EPOCHS = 100                   # was 50
+GLOBAL_EPOCHS = 150                  # was 100
+SHRINKING_EPOCHS = 80                # was 40
 
 # --- Training Modes ---
-DAILY_LOOKBACK = 504
+DAILY_LOOKBACK = 1008                # 4 years (was 504 days → too few samples)
 GLOBAL_TRAIN_START = "2008-01-01"
 SHRINKING_WINDOW_START_YEARS = list(range(2010, 2025))
 
