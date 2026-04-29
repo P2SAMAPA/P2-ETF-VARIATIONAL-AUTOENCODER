@@ -122,22 +122,25 @@ def main():
 
         universe_out = {}
 
-        # Daily
+        # Daily (now uses config.DAILY_EPOCHS)
         daily_ret = returns_all.iloc[-config.DAILY_LOOKBACK:]
         daily_macro = m.iloc[-config.DAILY_LOOKBACK:]
-        daily_out = run_vae_mode(daily_ret, daily_macro, tickers, "Daily", epochs=50)
+        daily_out = run_vae_mode(daily_ret, daily_macro, tickers, "Daily",
+                                 epochs=config.DAILY_EPOCHS)
         if daily_out:
             universe_out['daily'] = daily_out
             print(f"  Daily top: {daily_out['top_picks'][0]['ticker']}")
 
         # Global
-        global_out = run_vae_mode(returns_all, m, tickers, "Global", epochs=config.EPOCHS)
+        global_out = run_vae_mode(returns_all, m, tickers, "Global",
+                                  epochs=config.GLOBAL_EPOCHS)
         if global_out:
             universe_out['global'] = global_out
             print(f"  Global top: {global_out['top_picks'][0]['ticker']}")
 
-        # Shrinking Windows
-        shrinking = run_shrinking_windows(df_master, macro, tickers, epochs=40)
+        # Shrinking Windows (now uses config.SHRINKING_EPOCHS)
+        shrinking = run_shrinking_windows(df_master, macro, tickers,
+                                          epochs=config.SHRINKING_EPOCHS)
         if shrinking:
             universe_out['shrinking'] = shrinking
             print(f"  Shrinking consensus: {shrinking['ticker']} ({shrinking['conviction']:.0f}%)")
