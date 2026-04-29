@@ -67,11 +67,10 @@ class ConditionalVAE(nn.Module):
         self.eval()
         with torch.no_grad():
             batch_size = cond.size(0)
-            cond_expanded = cond.repeat(num_samples, 1)
+            cond_expanded = cond.repeat(num_samples, 1)               # (num_samples * batch, cond_dim)
             z = torch.randn(num_samples * batch_size, self.encoder.mu.out_features, device=cond.device)
             recon = self.decoder(z, cond_expanded)
-            # Reshape to (num_samples, batch_size, target_dim)
-            recon = recon.view(num_samples, batch_size, -1)
+            recon = recon.view(num_samples, batch_size, -1)          # (num_samples, batch, target_dim)
             return recon
 
 
@@ -126,9 +125,10 @@ class VAETrainer:
     def predict_expected_returns(self, latest_cond, tickers, num_samples=100):
         """Sample from the CVAE and return expected returns per ETF."""
         self.model.eval()
-        cond_t = torch.tensor(latest_cond, dtype=torch.float32).unsqueeze(0).to(self.device)
-        samples = self.model.sample(cond_t, num_samples)  # (num_samples, 1, n_etfs)
-        samples = samples.squeeze(1).cpu().numpy()        # (num_samples, n_etfs)
+        # latest_cond is a 2D numpy array of shape (1, cond_dim)
+        cond_t = torch.tensor(latest_cond, dtype=torch.float32).to(self.device)   # (1, cond_dim)
+        samples = self.model.sample(cond_t, num_samples)          # (num_samples, 1, n_etfs)
+        samples = samples.squeeze(1).cpu().numpy()                # (num_samples, n_etfs)
         expected = samples.mean(axis=0)
         return {t: float(expected[i]) for i, t in enumerate(tickers)}
 
@@ -139,6 +139,5 @@ class VAETrainer:
             cond_t = torch.tensor(cond[-lookback:], dtype=torch.float32).to(self.device)
             target_t = torch.tensor(target[-lookback:], dtype=torch.float32).to(self.device)
             mu, logvar = self.model.encoder(target_t, cond_t)
-            # KL divergence per sample
             kl_per_sample = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1)
             return float(kl_per_sample.mean().item())
