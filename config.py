@@ -49,7 +49,8 @@ SHRINKING_EPOCHS = 120               # 1.5× previous
 # --- Training Modes ---
 DAILY_LOOKBACK = 1008                # 4 years
 GLOBAL_TRAIN_START = "2008-01-01"
-SHRINKING_WINDOW_START_YEARS = list(range(2010, 2025))
+# ✅ Fixed: start shrinking windows from 2008 (instead of 2010)
+SHRINKING_WINDOW_START_YEARS = list(range(2008, 2025))
 
 # --- Date Handling ---
 TODAY = datetime.now().strftime("%Y-%m-%d")
