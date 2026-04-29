@@ -25,31 +25,32 @@ UNIVERSES = {
     "COMBINED": ALL_TICKERS
 }
 
-# --- Expanded Macro Features (more conditioning) ---
-MACRO_COLS = ["VIX", "DXY", "T10Y2Y", "TBILL_3M", "IG_SPREAD", "HY_SPREAD"]
+# --- Macro Features (only those fully available from 2008) ---
+# Removed IG_SPREAD and HY_SPREAD because they start in 2023
+MACRO_COLS = ["VIX", "DXY", "T10Y2Y", "TBILL_3M"]
 
-# --- VAE Parameters (maximum complexity) ---
-LATENT_DIM = 16                      # larger latent space
-HIDDEN_LAYERS = [512, 256, 128]      # very deep encoder/decoder
-BETA = 0.3                           # lower KL weight → better reconstruction
-LEARNING_RATE = 0.0005               # lower LR for stable deep training
-BATCH_SIZE = 256                     # larger batch for GPU efficiency
+# --- VAE Parameters ---
+LATENT_DIM = 16
+HIDDEN_LAYERS = [512, 256, 128]
+BETA = 0.3
+LEARNING_RATE = 0.0005
+BATCH_SIZE = 256
 RANDOM_SEED = 42
 MIN_OBSERVATIONS = 252
 
 # --- Inference ---
-NUM_SAMPLES = 500                    # more MC samples for accurate expectation
-REGIME_WINDOW = 126                  # longer lookback for regime stress
+NUM_SAMPLES = 500
+REGIME_WINDOW = 126
 
-# --- Training Epochs (aggressive) ---
-DAILY_EPOCHS = 200                   # 2× previous
-GLOBAL_EPOCHS = 250                  # 1.67× previous
-SHRINKING_EPOCHS = 120               # 1.5× previous
+# --- Training Epochs ---
+DAILY_EPOCHS = 300
+GLOBAL_EPOCHS = 500
+SHRINKING_EPOCHS = 250
 
 # --- Training Modes ---
-DAILY_LOOKBACK = 1008                # 4 years
+DAILY_LOOKBACK = 1008
 GLOBAL_TRAIN_START = "2008-01-01"
-# ✅ Fixed: start shrinking windows from 2008 (instead of 2010)
+# Start shrinking windows from 2008 (or 2009 if you want full 3‑year windows)
 SHRINKING_WINDOW_START_YEARS = list(range(2008, 2025))
 
 # --- Date Handling ---
