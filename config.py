@@ -25,29 +25,29 @@ UNIVERSES = {
     "COMBINED": ALL_TICKERS
 }
 
-# --- Macro Features (conditioning) ---
-MACRO_COLS = ["VIX", "DXY", "T10Y2Y", "TBILL_3M"]
+# --- Expanded Macro Features (more conditioning) ---
+MACRO_COLS = ["VIX", "DXY", "T10Y2Y", "TBILL_3M", "IG_SPREAD", "HY_SPREAD"]
 
-# --- VAE Parameters (higher complexity) ---
-LATENT_DIM = 12                      # more expressive latent space
-HIDDEN_LAYERS = [256, 128, 64]       # deeper encoder/decoder
-BETA = 0.5                           # β-VAE weight for KL loss
-LEARNING_RATE = 0.001
-BATCH_SIZE = 128
+# --- VAE Parameters (maximum complexity) ---
+LATENT_DIM = 16                      # larger latent space
+HIDDEN_LAYERS = [512, 256, 128]      # very deep encoder/decoder
+BETA = 0.3                           # lower KL weight → better reconstruction
+LEARNING_RATE = 0.0005               # lower LR for stable deep training
+BATCH_SIZE = 256                     # larger batch for GPU efficiency
 RANDOM_SEED = 42
 MIN_OBSERVATIONS = 252
 
 # --- Inference ---
-NUM_SAMPLES = 200                    # more Monte Carlo samples
-REGIME_WINDOW = 63
+NUM_SAMPLES = 500                    # more MC samples for accurate expectation
+REGIME_WINDOW = 126                  # longer lookback for regime stress
 
-# --- Training Epochs ---
-DAILY_EPOCHS = 100                   # was 50
-GLOBAL_EPOCHS = 150                  # was 100
-SHRINKING_EPOCHS = 80                # was 40
+# --- Training Epochs (aggressive) ---
+DAILY_EPOCHS = 200                   # 2× previous
+GLOBAL_EPOCHS = 250                  # 1.67× previous
+SHRINKING_EPOCHS = 120               # 1.5× previous
 
 # --- Training Modes ---
-DAILY_LOOKBACK = 1008                # 4 years (was 504 days → too few samples)
+DAILY_LOOKBACK = 1008                # 4 years
 GLOBAL_TRAIN_START = "2008-01-01"
 SHRINKING_WINDOW_START_YEARS = list(range(2010, 2025))
 
